@@ -46,4 +46,6 @@ public class Movie {
 	public List<String> getActors() {
 		return actors;
 	}
+
+	public void setActors(List<String> actors) { this.actors = actors; }
 }
