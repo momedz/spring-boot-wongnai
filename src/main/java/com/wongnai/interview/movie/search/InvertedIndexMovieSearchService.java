@@ -55,7 +55,20 @@ public class InvertedIndexMovieSearchService implements MovieSearchService {
 				}
 			}
 		}
+		List<Set<Long>> lists_indexs = new ArrayList<>();
 
-		return null;
+		for(String word: queryText.toLowerCase().split(" "))
+			if(InvertedIndexMovie.containsKey(word.trim()))
+				lists_indexs.add(InvertedIndexMovie.get(word.trim()));
+			else
+				lists_indexs.add(new HashSet<>());
+
+		List<Movie> movies = new ArrayList<>();
+		if (lists_indexs.size() > 0) {
+			Set<Long> indexs = new HashSet<>(lists_indexs.get(0));
+			lists_indexs.forEach(indexs::retainAll);
+			movieRepository.findAllById(indexs).forEach(movies::add);
+		}
+		return movies;
 	}
 }
