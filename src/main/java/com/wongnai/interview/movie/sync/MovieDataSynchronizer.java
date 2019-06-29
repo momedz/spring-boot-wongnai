@@ -29,6 +29,7 @@ public class MovieDataSynchronizer {
 					movie.setActors(movieData.getCast());
 					return movie;
 				}).collect(Collectors.toList());
+		movieRepository.deleteAll();
 		movieRepository.saveAll(movies);
 	}
 }
