@@ -1,6 +1,7 @@
 package com.wongnai.interview.movie.search;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
@@ -15,6 +16,8 @@ import com.wongnai.interview.movie.MovieSearchService;
 public class InvertedIndexMovieSearchService implements MovieSearchService {
 	@Autowired
 	private MovieRepository movieRepository;
+
+	private Map<String, Set<Long>> InvertedIndexMovie = new HashMap<>();
 
 	@Override
 	public List<Movie> search(String queryText) {
@@ -34,6 +37,24 @@ public class InvertedIndexMovieSearchService implements MovieSearchService {
 		// from inverted index for Star and for War so that you get movie ids 1,5,8 for Star and 2,5 for War. The result that
 		// you have to return can be union or intersection of those 2 sets of ids.
 		// By the way, in this assignment, you must use intersection so that it left for just movie id 5.
+		if(InvertedIndexMovie.isEmpty()) {
+			Iterable<Movie> iter_movies = movieRepository.findAll();
+			for(Movie movie: iter_movies) {
+				Long id = movie.getId();
+				String name = movie.getName().toLowerCase();
+				String[] words = name.split(" ");
+				for(String word: words) {
+					Set<Long> set = new HashSet<>(Collections.singletonList(id));
+					set.add(id);
+					if (InvertedIndexMovie.containsKey(word)) {
+						set.addAll(InvertedIndexMovie.get(word));
+						InvertedIndexMovie.replace(word, set);
+					} else {
+						InvertedIndexMovie.put(word, set);
+					}
+				}
+			}
+		}
 
 		return null;
 	}
